@@ -207,13 +207,14 @@ app.get("/account/process", (req, res) => {
     res.sendFile(path.join(__dirname, "account/process/index.html"));
 });
 
-// -------- EMAIL TRANSPORT -------- //
+
+            // -------- EMAIL TRANSPORT -------- //
 
 // -------- REPAIRED EMAIL TRANSPORT -------- //
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,       // Use 465 for a more stable "Secure from start" connection
-    secure: true,    // Required for port 465
+    port: 587,       // Use 587 for a more stable "Secure from start" connection
+    secure: false,    // Required for port 587
     auth: {
         user: "john03t4@gmail.com",
         // MUST BE A 16-CHARACTER APP PASSWORD
@@ -221,20 +222,17 @@ const transporter = nodemailer.createTransport({
     },
     tls: {
         // This prevents the "Socket Disconnected" error in many network environments
-        rejectUnauthorized: false,
         servername: "smtp.gmail.com"
     }
 });
 
-// Diagnostic check on startup
-transporter.verify((error, success) => {
-    if (error) {
-        logger(`SMTP Diagnostic Failed: ${error.message}`, "ERROR");
-        console.log("Check: 1. Is your internet active? 2. Is the App Password correct?");
-    } else {
-        logger("SMTP Gateway established and verified.", "SUCCESS");
-    }
-});
+setTimeout(() => {
+    transporter.verify()
+        .then(() => logger("SMTP ready"))
+        .catch(err => logger("SMTP error:", err.message));
+}, 5000);
+
+
 
 /**
  * EMAIL TEMPLATE GENERATOR
