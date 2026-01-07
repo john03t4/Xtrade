@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Register | XTRADE</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../scripts/jquery-3.6.0.min.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #253978;
+            --input-bg: #ecf2ff;
+            --text-dark: #1a202c;
+            --primary-color: #2b449c; /* For MGM script compatibility */
+            --white: #ffffff;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Video/Background */
+        #myVideo {
+            position: fixed;
+            right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -1;
+            filter: brightness(0.4);
+            object-fit: cover;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            z-index: 100;
+        }
+
+        .btn-nav {
+            background: var(--primary-blue);
+            color: white !important;
+            border-radius: 8px;
+            padding: 8px 20px;
+            margin-left: 10px;
+            font-weight: bold;
+            border: none;
+        }
+
+        /* Form Card */
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 80px 15px;
+        }
+
+        .form-card {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Headlines */
+        .welcome-badge {
+            color: #253978;
+            display: inline-block;
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sub-badge {
+            color: #64748b;
+            display: inline-block;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        /* Inputs */
+        .form-group label {
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #4a5568;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            background-color: var(--input-bg) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 24px 15px !important;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* Select box specific height fix */
+        select.form-control {
+            padding: 5px 15px !important;
+            height: 50px !important;
+        }
+
+        .pwd-container { position: relative; }
+        .eye-icon {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        /* Buttons */
+        .btn-register {
+            background: var(--primary-blue);
+            color: white;
+            width: 100%;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            border: none;
+            transition: 0.3s;
+        }
+
+        /* Modern Preloader */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #00bfff;
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating MGM Component */
+        .mgm {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: var(--white);
+            padding: 16px 24px;
+            border-radius: 18px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 1000;
+            border-left: 6px solid #253978;
+            max-width: 320px;
+            animation: animate__fadeInLeft 0.5s;
+        }
+
+        .mgm .txt {
+            font-size: 0.85rem;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .mgm b { 
+            color: #253978;
+         }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <video autoplay muted loop id="myVideo">
+        <source src="../../account/bg.mp4" type="video/mp4">
+    </video>
+
+    <div class="top-nav">
+        <a href="#" class="btn btn-nav navs" data-key="home">Home</a>
+        <a href="#" class="btn btn-nav navs" data-key="login">Login</a>
+    </div>
+
+<div class="wrapper">
+    <div class="form-card text-center">
+        <img src="../../media/logo_header+dark.png" alt="XTRADE" style="width: 150px; margin-bottom: 25px;">
+
+        <div><span class="welcome-badge">Create Account</span></div>
+        <div><span class="sub-badge">Join thousands of traders worldwide</span></div>
+
+        <form id="registerForm" class="text-left mt-2">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" class="form-control" name="fname" required>
+            </div>
+
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" class="form-control" name="lname" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" class="form-control" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Residential Address</label>
+                <input class="form-control" name="address" rows="2" required placeholder="Street, City, State..."></input>
+            </div>
+
+            <div class="form-group">
+                <label>Account Type (Hold Ctrl to select multiple)</label>
+                <select class="form-control" name="account[]" multiple style="height: 100px !important;">
+                    <option value="Forex Trading">Forex Trading</option>
+                    <option value="Stock Trading">Stock Trading</option>
+                    <option value="Binary Option">Binary Option</option>
+                    <option value="Crypto Mining">Crypto Mining</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Preferred Currency</label>
+                <select class="form-control" name="currency" required>
+                    <option value="USD">USD ($) - US Dollar</option>
+                    <option value="EUR">EUR (€) - Euro</option>
+                    <option value="GBP">GBP (£) - British Pound</option>
+                    <option value="JPY">JPY (¥) - Japanese Yen</option>
+                    <option value="CHF">CHF (Fr) - Swiss Franc</option>
+                    <option value="CAD">CAD ($) - Canadian Dollar</option>
+                    <option value="AUD">AUD ($) - Australian Dollar</option>
+                    <option value="NZD">NZD ($) - New Zealand Dollar</option>
+                    <option value="CNY">CNY (¥) - Chinese Yuan</option>
+
+                    <option value="NGN">NGN (₦) - Nigerian Naira</option>
+                    <option value="ZAR">ZAR (R) - South African Rand</option>
+                    <option value="EGP">EGP (E£) - Egyptian Pound</option>
+                    <option value="GHS">GHS (₵) - Ghanaian Cedi</option>
+                    <option value="KES">KES (KSh) - Kenyan Shilling</option>
+                    <option value="MAD">MAD (DH) - Moroccan Dirham</option>
+                    <option value="UGX">UGX (USh) - Ugandan Shilling</option>
+                    <option value="DZD">DZD (DA) - Algerian Dinar</option>
+                    <option value="TND">TND (DT) - Tunisian Dinar</option>
+                    <option value="ETB">ETB (Br) - Ethiopian Birr</option>
+
+                    <option value="AED">AED (د.إ) - UAE Dirham</option>
+                    <option value="SAR">SAR (﷼) - Saudi Riyal</option>
+                    <option value="ILS">ILS (₪) - Israeli New Shekel</option>
+                    <option value="TRY">TRY (₺) - Turkish Lira</option>
+                    <option value="QAR">QAR (QR) - Qatari Riyal</option>
+                    <option value="KWD">KWD (KD) - Kuwaiti Dinar</option>
+                    <option value="OMR">OMR (RO) - Omani Rial</option>
+                    <option value="BHD">BHD (BD) - Bahraini Dinar</option>
+                    <option value="JOD">JOD (JD) - Jordanian Dinar</option>
+
+                    <option value="INR">INR (₹) - Indian Rupee</option>
+                    <option value="KRW">KRW (₩) - South Korean Won</option>
+                    <option value="SGD">SGD ($) - Singapore Dollar</option>
+                    <option value="HKD">HKD ($) - Hong Kong Dollar</option>
+                    <option value="TWD">TWD (NT$) - New Taiwan Dollar</option>
+                    <option value="THB">THB (฿) - Thai Baht</option>
+                    <option value="MYR">MYR (RM) - Malaysian Ringgit</option>
+                    <option value="IDR">IDR (Rp) - Indonesian Rupiah</option>
+                    <option value="PHP">PHP (₱) - Philippine Peso</option>
+                    <option value="VND">VND (₫) - Vietnamese Dong</option>
+                    <option value="PKR">PKR (Rs) - Pakistani Rupee</option>
+                    <option value="BDT">BDT (৳) - Bangladeshi Taka</option>
+
+                    <option value="BRL">BRL (R$) - Brazilian Real</option>
+                    <option value="MXN">MXN ($) - Mexican Peso</option>
+                    <option value="ARS">ARS ($) - Argentine Peso</option>
+                    <option value="CLP">CLP ($) - Chilean Peso</option>
+                    <option value="COP">COP ($) - Colombian Peso</option>
+                    <option value="PEN">PEN (S/) - Peruvian Sol</option>
+                    <option value="UYU">UYU ($U) - Uruguayan Peso</option>
+
+                    <option value="RUB">RUB (₽) - Russian Ruble</option>
+                    <option value="SEK">SEK (kr) - Swedish Krona</option>
+                    <option value="NOK">NOK (kr) - Norwegian Krone</option>
+                    <option value="DKK">DKK (kr) - Danish Krone</option>
+                    <option value="PLN">PLN (zł) - Polish Zloty</option>
+                    <option value="HUF">HUF (Ft) - Hungarian Forint</option>
+                    <option value="CZK">CZK (Kč) - Czech Koruna</option>
+                    <option value="RON">RON (lei) - Romanian Leu</option>
+                    <option value="UAH">UAH (₴) - Ukrainian Hryvnia</option>
+
+                    <option value="BTC">BTC (₿) - Bitcoin</option>
+                    <option value="ETH">ETH (Ξ) - Ethereum</option>
+                    <option value="USDT">USDT (₮) - Tether</option>
+                </select>
+            </div>
+
+            <div class="form-group pwd-container">
+                <label>Secure Password</label>
+                <input type="password" class="form-control" name="password" id="pwd" required>
+                <i id="eye" class="fa fa-eye-slash eye-icon" onclick="vPwd()"></i>
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" class="form-control" name="password2" id="password2" required>
+            </div>
+
+            <div class="form-group">
+                <label>Country</label>
+                <select class="form-control" name="country" required>
+                    <option value="">Select Country</option>
+                    <option>Afghanistan</option>
+                    <option>Albania</option>
+                    <option>Algeria</option>
+                    <option>Andorra</option>
+                    <option>Angola</option>
+                    <option>Antigua and Barbuda</option>
+                    <option>Argentina</option>
+                    <option>Armenia</option>
+                    <option>Australia</option>
+                    <option>Austria</option>
+                    <option>Azerbaijan</option>
+                    <option>Bahamas</option>
+                    <option>Bahrain</option>
+                    <option>Bangladesh</option>
+                    <option>Barbados</option>
+                    <option>Belarus</option>
+                    <option>Belgium</option>
+                    <option>Belize</option>
+                    <option>Benin</option>
+                    <option>Bhutan</option>
+                    <option>Bolivia</option>
+                    <option>Bosnia and Herzegovina</option>
+                    <option>Botswana</option>
+                    <option>Brazil</option>
+                    <option>Brunei</option>
+                    <option>Bulgaria</option>
+                    <option>Burkina Faso</option>
+                    <option>Burundi</option>
+                    <option>Cabo Verde</option>
+                    <option>Cambodia</option>
+                    <option>Cameroon</option>
+                    <option>Canada</option>
+                    <option>Central African Republic</option>
+                    <option>Chad</option>
+                    <option>Chile</option>
+                    <option>China</option>
+                    <option>Colombia</option>
+                    <option>Comoros</option>
+                    <option>Congo, Democratic Republic of the</option>
+                    <option>Congo, Republic of the</option>
+                    <option>Costa Rica</option>
+                    <option>Côte d’Ivoire</option>
+                    <option>Croatia</option>
+                    <option>Cuba</option>
+                    <option>Cyprus</option>
+                    <option>Czech Republic</option>
+                    <option>Denmark</option>
+                    <option>Djibouti</option>
+                    <option>Dominica</option>
+                    <option>Dominican Republic</option>
+                    <option>Ecuador</option>
+                    <option>Egypt</option>
+                    <option>El Salvador</option>
+                    <option>Equatorial Guinea</option>
+                    <option>Eritrea</option>
+                    <option>Estonia</option>
+                    <option>Eswatini</option>
+                    <option>Ethiopia</option>
+                    <option>Fiji</option>
+                    <option>Finland</option>
+                    <option>France</option>
+                    <option>Gabon</option>
+                    <option>Gambia</option>
+                    <option>Georgia</option>
+                    <option>Germany</option>
+                    <option>Ghana</option>
+                    <option>Greece</option>
+                    <option>Grenada</option>
+                    <option>Guatemala</option>
+                    <option>Guinea</option>
+                    <option>Guinea-Bissau</option>
+                    <option>Guyana</option>
+                    <option>Haiti</option>
+                    <option>Honduras</option>
+                    <option>Hungary</option>
+                    <option>Iceland</option>
+                    <option>India</option>
+                    <option>Indonesia</option>
+                    <option>Iran</option>
+                    <option>Iraq</option>
+                    <option>Ireland</option>
+                    <option>Israel</option>
+                    <option>Italy</option>
+                    <option>Jamaica</option>
+                    <option>Japan</option>
+                    <option>Jordan</option>
+                    <option>Kazakhstan</option>
+                    <option>Kenya</option>
+                    <option>Kiribati</option>
+                    <option>Korea, North</option>
+                    <option>Korea, South</option>
+                    <option>Kosovo</option>
+                    <option>Kuwait</option>
+                    <option>Kyrgyzstan</option>
+                    <option>Laos</option>
+                    <option>Latvia</option>
+                    <option>Lebanon</option>
+                    <option>Lesotho</option>
+                    <option>Liberia</option>
+                    <option>Libya</option>
+                    <option>Liechtenstein</option>
+                    <option>Lithuania</option>
+                    <option>Luxembourg</option>
+                    <option>Madagascar</option>
+                    <option>Malawi</option>
+                    <option>Malaysia</option>
+                    <option>Maldives</option>
+                    <option>Mali</option>
+                    <option>Malta</option>
+                    <option>Marshall Islands</option>
+                    <option>Mauritania</option>
+                    <option>Mauritius</option>
+                    <option>Mexico</option>
+                    <option>Micronesia</option>
+                    <option>Moldova</option>
+                    <option>Monaco</option>
+                    <option>Mongolia</option>
+                    <option>Montenegro</option>
+                    <option>Morocco</option>
+                    <option>Mozambique</option>
+                    <option>Myanmar</option>
+                    <option>Namibia</option>
+                    <option>Nauru</option>
+                    <option>Nepal</option>
+                    <option>Netherlands</option>
+                    <option>New Zealand</option>
+                    <option>Nicaragua</option>
+                    <option>Niger</option>
+                    <option>Nigeria</option>
+                    <option>North Macedonia</option>
+                    <option>Norway</option>
+                    <option>Oman</option>
+                    <option>Pakistan</option>
+                    <option>Palau</option>
+                    <option>Palestine</option>
+                    <option>Panama</option>
+                    <option>Papua New Guinea</option>
+                    <option>Paraguay</option>
+                    <option>Peru</option>
+                    <option>Philippines</option>
+                    <option>Poland</option>
+                    <option>Portugal</option>
+                    <option>Qatar</option>
+                    <option>Romania</option>
+                    <option>Russia</option>
+                    <option>Rwanda</option>
+                    <option>Saint Kitts and Nevis</option>
+                    <option>Saint Lucia</option>
+                    <option>Saint Vincent and the Grenadines</option>
+                    <option>Samoa</option>
+                    <option>San Marino</option>
+                    <option>Sao Tome and Principe</option>
+                    <option>Saudi Arabia</option>
+                    <option>Senegal</option>
+                    <option>Serbia</option>
+                    <option>Seychelles</option>
+                    <option>Sierra Leone</option>
+                    <option>Singapore</option>
+                    <option>Slovakia</option>
+                    <option>Slovenia</option>
+                    <option>Solomon Islands</option>
+                    <option>Somalia</option>
+                    <option>South Africa</option>
+                    <option>South Sudan</option>
+                    <option>Spain</option>
+                    <option>Sri Lanka</option>
+                    <option>Sudan</option>
+                    <option>Suriname</option>
+                    <option>Sweden</option>
+                    <option>Switzerland</option>
+                    <option>Syria</option>
+                    <option>Taiwan</option>
+                    <option>Tajikistan</option>
+                    <option>Tanzania</option>
+                    <option>Thailand</option>
+                    <option>Timor-Leste</option>
+                    <option>Togo</option>
+                    <option>Tonga</option>
+                    <option>Trinidad and Tobago</option>
+                    <option>Tunisia</option>
+                    <option>Turkey</option>
+                    <option>Turkmenistan</option>
+                    <option>Tuvalu</option>
+                    <option>Uganda</option>
+                    <option>Ukraine</option>
+                    <option>United Arab Emirates</option>
+                    <option>United Kingdom</option>
+                    <option>United States</option>
+                    <option>Uruguay</option>
+                    <option>Uzbekistan</option>
+                    <option>Vanuatu</option>
+                    <option>Vatican City</option>
+                    <option>Venezuela</option>
+                    <option>Vietnam</option>
+                    <option>Yemen</option>
+                    <option>Zambia</option>
+                    <option>Zimbabwe</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Referral Code</label>
+                <input type="text" class="form-control" name="referral" id="referral" readonly>
+            </div>
+
+            <button type="button" id="registerBtn" class="btn-register">REGISTER NOW</button>
+        </form>
+        
+        <p class="mt-4 text-muted small">
+            Already have an account? <a href="#" class="navs" data-key="login" style="color:var(--primary-blue); font-weight:700;">Login here</a>
+        </p>
+    </div>
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(function () {
+    const API = 'http://localhost:3000';
+
+    $('#registerBtn').on('click', function () {
+
+        const password = $('#pwd').val();
+        const password2 = $('#password2').val();
+
+        if (password !== password2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Password Mismatch',
+                text: 'Passwords do not match'
+            });
+            return;
+        }
+
+        $('#preloader').css('display', 'flex');
+
+        const data = {};
+        $('#registerForm').serializeArray().forEach(i => {
+            if (i.name === 'account[]') {
+                if (!data.account) data.account = [];
+                data.account.push(i.value);
+            } else if (i.name !== 'password2') {
+                data[i.name] = i.value;
+            }
+        });
+
+        fetch(`${API}/account/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(res => {
+
+            // ✅ FULLY REMOVE PRELOADER FIRST
+            $('#preloader').hide();
+
+            console.log('REGISTER RESPONSE:', res);
+
+            if (res.success === true) {
+
+                localStorage.setItem('user_email', res.email || data.email);
+
+                // ✅ FORCE MODAL TO RENDER AFTER DOM RELEASE
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registration Successful',
+                        text: 'Verification code has been sent to your email.',
+                        confirmButtonText: 'Continue',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    }).then(() => {
+                        window.location.href = './process';
+                    });
+                }, 200);
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Registration Failed',
+                    text: res.message || 'Please try again'
+                });
+            }
+        })
+        .catch(err => {
+            $('#preloader').hide();
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'Unable to register. Please try again.'
+            });
+
+            console.error(err);
+        });
+    });
+});
+</script>
+
+
+
+
+
+    <script>
+    const menuLinksMap = { home: '../../', register: '', login: '../../account/login', terms: '../../terms' };
+    document.querySelectorAll('.navs').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = menuLinksMap[this.dataset.key];
+            if (url) {
+                document.getElementById('preloader').style.display = 'flex';
+                setTimeout(() => { window.location.href = url; }, 3000);
+            }
+        });
+    });
+    </script>
+
+    <script>
+         // MGM Live Proof Logic
+            const countries = ['United Kingdom', 'USA', 'Germany', 'Australia', 'Canada', 'Switzerland', 'Singapore', 'UAE'];
+            const plans = ['£12,000', '£5,500', '£25,000', '£40,000', '£8,200', '£15,000', '$51,000', '$14,500', '$40,000', '$41,000', '$10,000', '$50,000', '$52,300', '$9,700', '$10,000', '$4,500', '$9,500', '$34,000', '$42,000', '$4,600', '$3,700', '$27,500','$58,623','$31,600'];
+            const actions = ['just <b>invested</b>', 'successfully <b>withdrawn</b>', 'is <b>trading</b>'];
+
+            function showProof() {
+                const country = countries[Math.floor(Math.random() * countries.length)];
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                const amount = plans[Math.floor(Math.random() * plans.length)];
+                
+                $(".mgm .txt").html(`Someone from <b>${country}</b> ${action} <b>${amount}</b>`);
+                $(".mgm").fadeIn(400).delay(8000).fadeOut(400);
+                
+                const nextInterval = Math.floor(Math.random() * (CONFIG.NOTIF_INTERVAL[1] - CONFIG.NOTIF_INTERVAL[0])) + CONFIG.NOTIF_INTERVAL[0];
+                setTimeout(showProof, nextInterval);
+            }
+            
+            setTimeout(showProof, 5000);
+
+            // Security Hardening
+            $(document).keydown(function(e) {
+                if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74))) return false;
+                if (e.ctrlKey && e.keyCode == 85) return false;
+            });
+            document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Background Init
+        window.addEventListener('load', function() {
+            document.querySelector(".background").style.opacity = "1";
+        });
+    </script>
+
+    <script>
+        let dPwd = false;
+        function vPwd() {
+            let gPwd = $("#pwd");
+            if (!dPwd) {
+                $("#eye").removeClass("fa-eye-slash").addClass("fa-eye");
+                gPwd.attr("type", "text");
+                dPwd = true;
+            } else {
+                $("#eye").removeClass("fa-eye").addClass("fa-eye-slash");
+                gPwd.attr("type", "password");
+                dPwd = false;
+            }
+        }
+
+        
+    </script>
+
+    <!-- Smartsupp Live Chat script -->
+<script type="text/javascript">
+// Initialize Smartsupp with your key
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = '29652789ea6476f04e0983a84b72a2508a695a1c'; // Your provided key
+
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+
+/**
+ * Triggered when the user clicks "Continue to Chat"
+ */
+function submitOtherDeposit() {
+    const currencySelect = document.getElementById('currSelect');
+    const selectedCurrency = currencySelect.options[currencySelect.selectedIndex].value;
+    
+    if (!selectedCurrency) {
+        alert("Please select a currency first.");
+        return;
+    }
+
+    // Open the chat box automatically
+    smartsupp('chat:open');
+
+    // Send the automated message containing the currency name
+    smartsupp('chat:message', {
+        text: `Hello, I would like to make a deposit using ${selectedCurrency}. Please provide the details.`,
+        type: "text"
+    });
+}
+
+// Search filter logic for the currency list
+function filterCurrencies() {
+    let input = document.getElementById('currSearch').value.toUpperCase();
+    let options = document.getElementById('currSelect').getElementsByTagName('option');
+    for (let opt of options) {
+        opt.style.display = opt.text.toUpperCase().indexOf(input) > -1 ? "" : "none";
+    }
+}
+</script>
+</body>
+</html>

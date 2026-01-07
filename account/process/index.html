@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="../favicon.png" type="image/x-icon">
+  <title>Xtrade | Email Verification </title>
+  <link rel="stylesheet" href="../../css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="../../css/bootstrap.css" type="text/css">
+  <link rel="stylesheet" href="../../css/light_adminux.css" type="text/css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  <style type="text/css">
+    iframe.goog-te-banner-frame,
+    iframe.skiptranslate {
+      display: none !important;
+    }
+
+    body {
+      position: static !important;
+      top: 0px !important;
+    }
+
+    /* Preloader Style for JS logic - required by the script */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      display: none;
+      /* Initially hidden, controlled by JS */
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      flex-direction: column;
+    }
+
+    #preloader .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border: .25em solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spinner-border .75s linear infinite;
+    }
+
+    @keyframes spinner-border {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+
+  <script type="text/javascript">
+    (function() {
+      var options = {
+        whatsapp: "+1(214)377-0089", // WhatsApp number
+        call_to_action: "Contact us!", // Call to action
+        position: "left", // Position may be "right" or "left"
+      };
+      var proto = document.location.protocol,
+        host = "getbutton.io",
+        url = proto + "//static." + host;
+      var s = document.createElement("script");
+      s.type = "text/javascript";
+      s.async = true;
+      s.src = url + "/widget-send-button/js/init.js";
+      s.onload = function() {
+        WhWidgetSendButton.init(host, proto, options);
+      };
+      var x = document.getElementsByTagName("script")[0];
+      x.parentNode.insertBefore(s, x);
+    })();
+  </script>
+</head>
+
+<body oncut="return false" class="menuclose menuclose-right" style="background:gray">
+  <div id="preloader">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p class="mt-2">Processing...</p>
+  </div>
+
+  <figure class="background">
+    <video autoplay muted="muted" loop id="myVideo">
+      <source src="../../account/bg.mp4" type="video/mp4">
+    </video>
+  </figure>
+  <style>
+    #myVideo {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+    }
+  </style>
+
+  <div id="google_translate_element" display="none"></div>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en'
+      }, 'google_translate_element');
+    }
+  </script>
+
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <header class="navbar-fixed">
+    <nav class="navbar navbar-toggleable-md sign-in-header">
+      <div class="sidebar-left"> <a class="navbar-brand imglogo" href="#"></a> </div>
+      <div class="col"></div>
+      <div class="sidebar-right pull-right">
+        <ul class="navbar-nav justify-content-end">
+          <li style="margin:4px"><a href="#" class="btn btn-link text-white"></a></li>
+          <li style="margin:4px"><a href="../home" style="background:#253978;color:white" class="btn btn-primary">Home</a></li>
+          <li style="margin:4px"><a href="login" style="background:#253978;color:white" class="btn btn-primary">Login</a></li>
+          <li style="margin:4px"><a href="register" style="background:#253978;color:white" class="btn btn-primary">Register</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  <div class="wrapper-content-sign-in p-0">
+
+
+    <div class="container text-center">
+      <div class="form-signin1 light">
+        <form action="" method="POST">
+          <img style="width:60%;height:10%" align="center" src="../../media/logo_header+dark.png">
+          <p class="text-center text-white text-muted mt-3">We have sent a 6-digit verification code to your email: <b id="emailDisplay">Loading...</b></p>
+          <label style="color:black">Email Verification Code</label>
+          <input type="text" class="form-control" name="evc" minlength="6" maxlength="6" value="" placeholder="Enter Code" required>
+          <span style="color:crimson"></span>
+          <input type="submit" name="evc_btn" class="btn btn-lg btn-primary btn-round" style="background:#253978;color:white" value="Verify">
+        </form>
+
+        <div>
+          <p class="mt-3" style="color:crimson">
+            <button id="resendBtn" type="button" class="btn btn-link text-white" name="evc_resend">Resend Code</button>
+          </p>
+          <p class="mt-3" style="color:blue">go back to <a href="login" class="text-white">Login here...</a></p>
+        </div>
+      </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const API_BASE_URL = 'http://localhost:3000'; 
+        const form = document.querySelector(".form-signin1 form");
+        const preloader = $('#preloader');
+        const verifyBtn = $('input[name="evc_btn"]');
+        const resendBtn = $('#resendBtn');
+        const emailDisplayElement = $('#emailDisplay');
+
+        // 1. Get user email from LocalStorage
+        let userEmail = localStorage.getItem('user_email'); 
+        
+        if (!userEmail) {
+            Swal.fire("Error", "No email found. Redirecting to login.", "warning")
+            setTimeout(location.href = './login', 2000)
+            return;
+        }
+
+        // Display the email to the user
+        emailDisplayElement.text(userEmail);
+
+        // 2. Handle Verification Form Submission
+        $(form).on('submit', async function(e) {
+            e.preventDefault();
+            preloader.css('display', 'flex');
+            verifyBtn.prop('disabled', true);
+
+            const evc = $('input[name="evc"]').val();
+
+            try {
+                // Endpoint handles main DB update, private DB creation (e.g., cenz.sqlite), 
+                // and copying all user details.
+                const res = await fetch(`${API_BASE_URL}/account/process`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: userEmail, evc: evc }) 
+                });
+                
+                const responseData = await res.json();
+                
+                if (res.ok) {
+                    // Success: Clear storage and show exact requested phrase
+                    localStorage.removeItem('user_email'); 
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Verfication successfull', 
+                        text: 'Account database initialized. Redirecting to Login...',
+                        showConfirmButton: false,
+                    })
+                    setTimeout(location.href = './login', 2500)
+                } else {
+                    Swal.fire("Verification Failed", responseData.message || "Invalid code", "error");
+                }
+            } catch (err) {
+                Swal.fire("Error", "A network error occurred.", "error");
+            } finally {
+                preloader.css('display', 'none');
+                verifyBtn.prop('disabled', false);
+            }
+        });
+
+        // 3. Updated Resend Code Logic
+        resendBtn.on('click', async function(e) { 
+            e.preventDefault();
+            preloader.css('display', 'flex');
+            preloader.find('p').text('Resending code...');
+
+            try {
+                // Updated to match the new /account/resend-code endpoint
+                const res = await fetch(`${API_BASE_URL}/account/resend-code`, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: userEmail }) 
+                });
+                
+                const responseData = await res.json();
+                
+                if (res.ok) {
+                    Swal.fire("Success", responseData.message, "success");
+                } else {
+                    Swal.fire("Resend Failed", responseData.message, "error");
+                }
+            } catch(err) {
+                Swal.fire("Error", "Network error during resend.", "error");
+            } finally {
+                preloader.css('display', 'none');
+                preloader.find('p').text('Processing...');
+            }
+        });
+    });
+</script>
+
+
+</div>
+
+  <script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="vendor/bootstrap4beta/js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="vendor/cookie/jquery.cookie.js" type="text/javascript"></script>
+  <script src="js/ie10-viewport-bug-workaround.js"></script>
+  <script>
+    "use strict";
+    $('input[type="checkbox"]').on('change', function() {
+      $(this).parent().toggleClass("active")
+      $(this).closest(".media").toggleClass("active");
+    });
+    $(window).on("load", function() {
+      /* loading screen */
+      $(".loader_wrapper").fadeOut("slow");
+    });
+  </script>
+
+  <!-- Smartsupp Live Chat script -->
+<script type="text/javascript">
+// Initialize Smartsupp with your key
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = '29652789ea6476f04e0983a84b72a2508a695a1c'; // Your provided key
+
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+
+/**
+ * Triggered when the user clicks "Continue to Chat"
+ */
+function submitOtherDeposit() {
+    const currencySelect = document.getElementById('currSelect');
+    const selectedCurrency = currencySelect.options[currencySelect.selectedIndex].value;
+    
+    if (!selectedCurrency) {
+        alert("Please select a currency first.");
+        return;
+    }
+
+    // Open the chat box automatically
+    smartsupp('chat:open');
+
+    // Send the automated message containing the currency name
+    smartsupp('chat:message', {
+        text: `Hello, I would like to make a deposit using ${selectedCurrency}. Please provide the details.`,
+        type: "text"
+    });
+}
+
+// Search filter logic for the currency list
+function filterCurrencies() {
+    let input = document.getElementById('currSearch').value.toUpperCase();
+    let options = document.getElementById('currSelect').getElementsByTagName('option');
+    for (let opt of options) {
+        opt.style.display = opt.text.toUpperCase().indexOf(input) > -1 ? "" : "none";
+    }
+}
+</script>
+
+  <style>
+    .mgm {
+      border-radius: 7px;
+      border: 4px solid #253978;
+      position: fixed;
+      z-index: 90;
+      /* bottom: 80px; */
+      /* right: 20px; */
+      bottom: 4px;
+      left: 30px;
+      background: #fff;
+      padding: 10px 27px;
+      box-shadow: 0px 5px 13px 0px rgba(0, 0, 0, .3);
+    }
+
+    .mgm a {
+      font-weight: 700;
+      display: block;
+      color: #253978;
+    }
+
+    .mgm a,
+    .mgm a:active {
+      transition: all .2s ease;
+      color: #253978;
+    }
+  </style>
+  <div class="mgm" style="display: none;">
+    <div class="txt" style="color:black;"></div>
+  </div>
+
+  <script data-cfasync="false" src="#"></script>
+  <script type="text/javascript">
+    var listCountries = ['South Africa', 'USA', 'Germany', 'France', 'Italy', 'Turkey', 'Italy', 'Brazil', 'Canada', 'Argentina', 'Saudi Arabia', 'Mexico', 'China', 'Mexico', 'Venezuela', 'USA', 'Sweden', 'Italy', 'South Africa', 'Italy', 'USA', 'Italy', 'Italy', 'Greece', 'Cuba', 'USA', 'Portugal', 'Austria', 'Spain', 'Panama', 'South Africa', 'China', 'Netherlands', 'Switzerland', 'Belgium', 'Israel', 'Cyprus'];
+    var listPlans = ['$51,000', '$14,500', '$40,000', '$41,000', '$10,000', '$50,000', '$52,300', '$9,700', '$10,000', '$4,500', '$9,500', '$34,000', '$42,000', '$4,600', '$3,700', '$27,500', '$58,623', '$31,600'];
+    var transarray = ['just <b>invested</b>', 'has <b>withdrawn</b>', 'is <b>trading with</b>'];
+
+
+    var listPlans = ['£51,000', '£14,500', '£40,000', '£41,000', '£10,000', '£50,000', '£52,300', '£9,700', '£10,000', '£4,500', '£9,500', '£34,000', '£42,000', '£4,600', '£3,700', '£27,500', '£58,623', '£31,600'];
+    var transarray = ['just <b>invested</b>', 'has <b>withdrawn</b>', 'is <b>trading with</b>'];*/
+    interval = Math.floor(Math.random() * (40000 - 8000 + 1) + 8000);
+    var run = setInterval(request, interval);
+
+    function request() {
+      clearInterval(run);
+      interval = Math.floor(Math.random() * (40000 - 8000 + 1) + 8000);
+      var country = listCountries[Math.floor(Math.random() * listCountries.length)];
+      var transtype = transarray[Math.floor(Math.random() * transarray.length)];
+      var plan = listPlans[Math.floor(Math.random() * listPlans.length)];
+      var msg = 'Someone from <b>' + country + '</b> ' + transtype + ' <a href="javascript:void(0);" onclick="javascript:void(0);">' + plan + '</a>';
+      $(".mgm .txt").html(msg);
+      $(".mgm").stop(true).fadeIn(300);
+      window.setTimeout(function() {
+        $(".mgm").stop(true).fadeOut(300);
+      }, 10000);
+      run = setInterval(request, interval);
+    }
+  </script>
+
+
+  <script>
+    let dPwd = false;
+
+    function vPwd() {
+      let gPwd = $("#pwd");
+      if (dPwd === false) {
+        $("#eye").removeClass("fa-eye-slash")
+        $("#eye").addClass("fa-eye")
+        gPwd.attr("type", "text");
+        dPwd = true;
+      } else if (dPwd === true) {
+        $("#eye").removeClass("fa-eye")
+        $("#eye").addClass("fa-eye-slash")
+        gPwd.attr("type", "password");
+        dPwd = false;
+      }
+    }
+  </script>
+  <script>
+    // $(document).ready(function(){
+    // $("body").bind("cut copy paste",function(e){
+    //   e.preventDefault();
+    // })
+    // $("body").on("contextmenu",function(e){
+    //   return false;
+    // });
+    // }) 
+  </script>
+
+  <script>
+    $(document).keydown(function(event) {
+      if (event.keyCode == 123) {
+        return false;
+      } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
+        return false;
+      }
+    })
+    document.addEventListener('contextmenu', event => event.preventDefault())
+  </script>
+
+</body>
+
+</html>

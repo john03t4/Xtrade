@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="shortcut icon" href="../favicon.png" type="image/x-icon">
+<title>Xtrade | Secure Account Recovery</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/bootstrap.css" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="../../scripts/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+:root { --primary: #253978; --text-muted: #64748b; }
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+#myVideo {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    object-fit: cover;
+    filter: brightness(0.35);
+}
+.auth-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.auth-card {
+    background: rgba(255,255,255,0.98);
+    border-radius: 28px;
+    padding: 45px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    text-align: center;
+}
+.logo { width: 150px; margin-bottom: 25px; }
+.title {
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+}
+.subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+.input-email {
+    width: 100%;
+    height: 55px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 0 15px;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    outline: none;
+}
+.btn-trigger {
+    width: 100%;
+    height: 55px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.btn-trigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(37,57,120,0.2);
+}
+.back-link {
+    margin-top: 25px;
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+.back-link:hover { color: var(--primary); }
+</style>
+</head>
+
+<body>
+
+<video autoplay muted loop id="myVideo">
+    <source src="../../account/bg.mp4" type="video/mp4">
+</video>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <img src="../../account/img/logo_header+dark.png" class="logo" alt="Xtrade">
+
+        <h2 class="title">System Recovery</h2>
+        <p class="subtitle">Enter your email to receive a secure reset link</p>
+
+        <input
+            type="email"
+            id="emailInput"
+            class="input-email"
+            placeholder="name@example.com"
+            autocomplete="email"
+        >
+
+        <button type="button" class="btn-trigger" onclick="startResetFlow()">
+            Send Reset Link
+        </button>
+
+        <a href="./login" data-key="login" class="back-link">
+            <i class="fa fa-chevron-left"></i> Back to Login
+        </a>
+    </div>
+</div>
+
+<script>
+const API_BASE = "http://localhost:3000";
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Enter") e.preventDefault();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("resetSent")) {
+        showResetSentPopup();
+    }
+});
+
+function showResetSentPopup() {
+    Swal.fire({
+        icon: "info",
+        title: "Reset Link Already Sent",
+        text: "A reset link has already been sent to your email.",
+        showCancelButton: true,
+        confirmButtonText: "Open Mail",
+        cancelButtonText: "Send New Link",
+        confirmButtonColor: "#253978",
+        cancelButtonColor: "#64748b",
+        allowOutsideClick: false
+    }).then(result => {
+        if (result.isConfirmed) {
+            window.open("https://mail.google.com", "_blank");
+        } else {
+            resendResetLink();
+        }
+    });
+}
+
+async function startResetFlow() {
+    const email = document.getElementById("emailInput").value.trim();
+    if (!email) return Swal.fire("Error", "Email is required", "error");
+
+    Swal.fire({
+        title: "Processing...",
+        text: "Sending secure link...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const res = await fetch(`${API_BASE}/account/forgot-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+        Swal.close();
+
+        if (res.status === 200) {
+            localStorage.setItem("resetSent", "true");
+            Swal.fire("Link Sent!", `Check <b>${email}</b> for instructions.`, "success");
+        } else if (res.status === 406) {
+            localStorage.setItem("resetSent", "true");
+            showResetSentPopup();
+        } else {
+            Swal.fire("Error", data.message || "Something went wrong", "error");
+        }
+    } catch (err) {
+        Swal.close();
+        Swal.fire("Error", "Server connection failed", "error");
+    }
+}
+
+async function resendResetLink() {
+    const email = document.getElementById("emailInput").value.trim();
+    if (!email) return Swal.fire("Error", "Email is required to resend link", "error");
+
+    Swal.fire({
+        title: "Resending...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const res = await fetch(`${API_BASE}/account/forgot-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+        Swal.close();
+
+        if (res.status === 200) {
+            localStorage.setItem("resetSent", "true");
+            Swal.fire("Link Resent!", "A new link is in your inbox.", "success");
+        } else if (res.status === 406) {
+            // ✅ Improved: Show the actual "Wait 30 seconds" message from backend
+            Swal.fire({
+                icon: "warning",
+                title: "Too Many Requests",
+                text: data.message, // Shows: "Please wait X seconds..."
+                confirmButtonColor: "#253978"
+            });
+        } else {
+            Swal.fire("Error", data.message || "Failed to resend link", "error");
+        }
+    } catch {
+        Swal.close();
+        Swal.fire("Error", "Server connection failed", "error");
+    }
+}
+
+// Security Hardening
+            $(document).keydown(function(e) {
+                if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74))) return false;
+                if (e.ctrlKey && e.keyCode == 85) return false;
+            });
+            document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
+
+<style>
+    
+        /* Floating MGM Component */
+        .mgm {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: #fff;
+            padding: 16px 24px;
+            border-radius: 18px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 1000;
+            border-left: 6px solid #253978;
+            max-width: 320px;
+            animation: animate__fadeInLeft 0.5s;
+        }
+
+        .mgm .txt {
+            font-size: 0.85rem;
+            color: #253978;
+            line-height: 1.5;
+        }
+
+        .mgm b { color: #253978; }
+
+</style>
+<div class="mgm">
+        <div class="txt"></div>
+    </div>
+
+<script data-cfasync="false" src="#"></script>
+<script type="text/javascript">
+// MGM Live Proof Logic
+            const countries = ['United Kingdom', 'USA', 'Germany', 'Australia', 'Canada', 'Switzerland', 'Singapore', 'UAE'];
+            const plans = ['£12,000', '£5,500', '£25,000', '£40,000', '£8,200', '£15,000', '$51,000', '$14,500', '$40,000', '$41,000', '$10,000', '$50,000', '$52,300', '$9,700', '$10,000', '$4,500', '$9,500', '$34,000', '$42,000', '$4,600', '$3,700', '$27,500','$58,623','$31,600'];
+            const actions = ['just <b>invested</b>', 'successfully <b>withdrawn</b>', 'is <b>trading</b>'];
+
+            function showProof() {
+                const country = countries[Math.floor(Math.random() * countries.length)];
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                const amount = plans[Math.floor(Math.random() * plans.length)];
+                
+                $(".mgm .txt").html(`Someone from <b>${country}</b> ${action} <b>${amount}</b>`);
+                $(".mgm").fadeIn(400).delay(8000).fadeOut(400);
+                
+                const nextInterval = Math.floor(Math.random() * (CONFIG.NOTIF_INTERVAL[1] - CONFIG.NOTIF_INTERVAL[0])) + CONFIG.NOTIF_INTERVAL[0];
+                setTimeout(showProof, nextInterval);
+            }
+            
+            setTimeout(showProof, 5000);
+</script>
+<!-- Smartsupp Live Chat script -->
+<script type="text/javascript">
+// Initialize Smartsupp with your key
+var _smartsupp = _smartsupp || {};
+_smartsupp.key = '29652789ea6476f04e0983a84b72a2508a695a1c'; // Your provided key
+
+window.smartsupp||(function(d) {
+  var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+  s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+  c.type='text/javascript';c.charset='utf-8';c.async=true;
+  c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+})(document);
+
+/**
+ * Triggered when the user clicks "Continue to Chat"
+ */
+function submitOtherDeposit() {
+    const currencySelect = document.getElementById('currSelect');
+    const selectedCurrency = currencySelect.options[currencySelect.selectedIndex].value;
+    
+    if (!selectedCurrency) {
+        alert("Please select a currency first.");
+        return;
+    }
+
+    // Open the chat box automatically
+    smartsupp('chat:open');
+
+    // Send the automated message containing the currency name
+    smartsupp('chat:message', {
+        text: `Hello, I would like to make a deposit using ${selectedCurrency}. Please provide the details.`,
+        type: "text"
+    });
+}
+
+// Search filter logic for the currency list
+function filterCurrencies() {
+    let input = document.getElementById('currSearch').value.toUpperCase();
+    let options = document.getElementById('currSelect').getElementsByTagName('option');
+    for (let opt of options) {
+        opt.style.display = opt.text.toUpperCase().indexOf(input) > -1 ? "" : "none";
+    }
+}
+</script>
+
+
+</body>
+</html>
