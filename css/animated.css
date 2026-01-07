@@ -1,0 +1,53 @@
+/* ===================================================================
+ANIMATION AND TRANSITION RULES (Targeted for #home-section)
+=================================================================== */
+
+/* -----------------------------------------------------------
+   1. Slogan Slider Transition (Fade Effect)
+----------------------------------------------------------- */
+/* Targets the slogan items specifically within the slider list */
+#home-section .slogan-item {
+    /* Set up transition for opacity */
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* -----------------------------------------------------------
+   2. Content Entrance Animation (Fade-Up Effect)
+----------------------------------------------------------- */
+
+/* Define the keyframes for a fade-up effect */
+@keyframes fade-bottom-in {
+    from {
+        opacity: 0;
+        transform: translateY(30px); /* Start slightly below the final position */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply the animation to the main content wrapper (col-lg-7) */
+#home-section .animated-content {
+    animation: fade-bottom-in 1s ease-out forwards;
+    animation-delay: 0.1s;
+    opacity: 0; /* Hidden by default until the animation starts */
+}
+
+
+/* Apply the animation to the image (col-lg-5) */
+#home-section .slide-image {
+    animation: fade-bottom-in 1s ease-out forwards;
+    animation-delay: 0.5s; 
+    opacity: 0; /* Hidden by default until the animation starts */
+}
+
+/* -----------------------------------------------------------
+   3. Button Hover Transition (Targeted interactivity)
+----------------------------------------------------------- */
+
+/* Basic transition for buttons inside the home section for smooth color/border changes on hover */
+#home-section .btn {
+    /* Apply a smooth transition to all animatable properties */
+    transition: all 0.3s ease-in-out; 
+}
