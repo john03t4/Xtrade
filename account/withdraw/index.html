@@ -558,8 +558,8 @@ $(document).ready(function () {
         MIN_LIMIT: 500,
         MAX_LIMIT: 100000,
         FEE_PERCENTAGE: 0.02,
-        API_VERIFY_PIN: 'http://localhost:3000/account/verify-pin',
-        API_WITHDRAW: 'http://localhost:3000/account/withdraw'
+        API_VERIFY_PIN: 'https://xtrade-85c5.onrender.com/account/verify-pin',
+        API_WITHDRAW: 'https://xtrade-85c5.onrender.com/account/withdraw'
     };
 
     const USER_EMAIL = localStorage.getItem('user_email');
@@ -908,7 +908,7 @@ $('#bankBtn').on('click', function () {
 
 <script>
 $(document).ready(function() {
-    const API_BASE = 'http://localhost:3000';
+    const API_BASE = 'https://xtrade-85c5.onrender.com';
     const userEmail = localStorage.getItem('user_email');
     const DEFAULT_IMG = 'img/profile/default.png';
     
