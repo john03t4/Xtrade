@@ -207,14 +207,13 @@ app.get("/account/process", (req, res) => {
     res.sendFile(path.join(__dirname, "account/process/index.html"));
 });
 
-
-            // -------- EMAIL TRANSPORT -------- //
+// -------- EMAIL TRANSPORT -------- //
 
 // -------- REPAIRED EMAIL TRANSPORT -------- //
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,       // Use 587 for a more stable "Secure from start" connection
-    secure: false,    // Required for port 587
+    port: 465,       // Use 465 for a more stable "Secure from start" connection
+    secure: true,    // Required for port 465
     auth: {
         user: "john03t4@gmail.com",
         // MUST BE A 16-CHARACTER APP PASSWORD
@@ -222,17 +221,20 @@ const transporter = nodemailer.createTransport({
     },
     tls: {
         // This prevents the "Socket Disconnected" error in many network environments
+        rejectUnauthorized: false,
         servername: "smtp.gmail.com"
     }
 });
 
-setTimeout(() => {
-    transporter.verify()
-        .then(() => logger("SMTP ready"))
-        .catch(err => logger("SMTP error:", err.message));
-}, 5000);
-
-
+// Diagnostic check on startup
+transporter.verify((error, success) => {
+    if (error) {
+        logger(`SMTP Diagnostic Failed: ${error.message}`, "ERROR");
+        console.log("Check: 1. Is your internet active? 2. Is the App Password correct?");
+    } else {
+        logger("SMTP Gateway established and verified.", "SUCCESS");
+    }
+});
 
 /**
  * EMAIL TEMPLATE GENERATOR
@@ -1349,29 +1351,43 @@ app.post("/admin/update-finances", async (req, res) => {
 /**
  * DELETE USER
  */
+/**
+ * DELETE USER
+ * Removes user from master database and deletes their private SQLite file.
+ */
 app.post("/admin/delete-user", async (req, res) => {
     const { adminEmail, userEmail } = req.body;
-    if (adminEmail !== ADMIN_EMAIL) return res.status(401).send("Unauthorized");
+
+    // Security Check
+    if (adminEmail !== ADMIN_EMAIL) {
+        return res.status(401).send("Unauthorized");
+    }
 
     try {
+        // 1. Get the username first to locate the specific database file
         const userInfo = await db.get("SELECT username FROM verified_users WHERE email=?", [userEmail]);
-        
-        // Delete from Main
+
+        // 2. Delete the user from the Master Database
         await db.run("DELETE FROM verified_users WHERE email = ?", [userEmail]);
-        
-        // Delete Private DB File
-        if (userInfo) {
+
+        // 3. Delete the Private User Database File
+        if (userInfo && userInfo.username) {
             const userDbFile = path.join(USERS_DIR, `${userInfo.username}.sqlite`);
+            
             if (fs.existsSync(userDbFile)) {
-                fs.unlinkSync(userDbFile);
-                logger(`Deleted DB file for ${userInfo.username}`);
+                fs.unlinkSync(userDbFile); // This deletes the .sqlite file
+                logger(`Deleted DB file for ${userInfo.username}`, "SUCCESS");
+            } else {
+                logger(`DB file for ${userInfo.username} not found, skipping file deletion.`, "WARN");
             }
         }
 
         logger(`Admin deleted user: ${userEmail}`);
         res.json({ success: true, message: "User and all associated data purged." });
+
     } catch (err) {
-        res.status(500).json({ success: false });
+        logger(`Error deleting user: ${err.message}`, "ERROR");
+        res.status(500).json({ success: false, message: "Server error during deletion." });
     }
 });
 
