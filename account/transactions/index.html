@@ -447,7 +447,7 @@ function format(value) {
 }
 
     try {
-        const res = await fetch(`https://xtrade-85c5.onrender.com/account/activity?email=${USER_EMAIL}`);
+        const res = await fetch(`https://xtrade-ndxz9ex7.b4a.run//account/activity?email=${USER_EMAIL}`);
         const data = await res.json();
         if (!data.success || !data.activity) return;
 
@@ -751,7 +751,7 @@ document.querySelector('#mail_support form').addEventListener('submit', async (e
     };
 
     try {
-        const response = await fetch('https://xtrade-85c5.onrender.com/api/contact', {
+        const response = await fetch('https://xtrade-ndxz9ex7.b4a.run//api/contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -828,7 +828,7 @@ document.querySelector('#mail_support form').addEventListener('submit', async (e
 
 <script>
 $(document).ready(function() {
-    const API_BASE = 'https://xtrade-85c5.onrender.com';
+    const API_BASE = 'https://xtrade-ndxz9ex7.b4a.run/';
     const userEmail = localStorage.getItem('user_email');
     const DEFAULT_IMG = 'img/profile/default.png';
     
