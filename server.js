@@ -437,7 +437,7 @@ app.post("/account/register", async (req, res) => {
     } = req.body;
 
     // Validation
-    if (!fname || !lname || !username || !email || !password || !country) {
+    if (!fname || !lname || !username || !email || !password || !country || !mobile) {
         return res.status(400).json({
             success: false,
             message: "Required fields are missing."
@@ -466,7 +466,7 @@ app.post("/account/register", async (req, res) => {
         // Validate referral
         if (referral) {
             const refCheck = await db.get(
-                "SELECT 1 FROM verified_users WHERE user_ref_code=?",
+                "SELECT 1 FROM verified_users WHERE username=?",
                 [referral]
             );
 
@@ -562,11 +562,11 @@ app.post("/account/process", async (req, res) => {
         if (!existingUser) {
             await db.run(
                 `INSERT INTO verified_users 
-                (email, fname, lname, username, password, mobile, referral, country, address, currency, account, registration_date) 
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+                (email, fname, lname, username, password, mobile, referral, country, address, currency, account, registration_date, user_ref_code) 
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 [
                     user.email, user.fname, user.lname, user.username, user.password, user.mobile,
-                    user.referral, user.country, user.address, user.currency, user.account, user.registration_date
+                    user.referral, user.country, user.address, user.currency, user.account, user.registration_date, user.username
                 ]
             );
             logger(`User ${user.username} added to verified_users`, "SUCCESS");
@@ -577,16 +577,27 @@ app.post("/account/process", async (req, res) => {
         // 3️⃣ Handle referral logic
         if (user.referral && user.referral.trim() !== "") {
             const referrer = await db.get(
-                "SELECT username FROM verified_users WHERE user_ref_code = ?",
+                "SELECT username FROM verified_users WHERE username = ?",
                 [user.referral]
             );
             if (referrer) {
                 try {
                     const refDb = await openUserDB(referrer.username);
+                    
+                    // Increment referral count
                     await refDb.run(
-                        "UPDATE profile SET total_referral_count = total_referral_count + 1 WHERE username = ?",
+                        "UPDATE profile SET total_referral_count = total_referral_count + 1, total_balance = total_balance + 10 WHERE username = ?",
                         [referrer.username]
                     );
+
+                    // Send Notification
+                    await refDb.exec(`CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, msg TEXT, type TEXT, seen INTEGER DEFAULT 0, date TEXT)`);
+                    
+                    await refDb.run(
+                        "INSERT INTO notifications (msg, type, seen, date) VALUES (?, ?, 0, ?)",
+                        ["You just invited a friend $10", "success", new Date().toISOString()]
+                    );
+
                     await refDb.close();
                     logger(`Referral count updated for: ${referrer.username}`, "SUCCESS");
                 } catch (refErr) {
@@ -1201,7 +1212,7 @@ app.post("/admin/data", async (req, res) => {
 
     try {
         const allUsers = await db.all(
-            "SELECT * FROM verified_users ORDER BY registration_date DESC"
+            "SELECT * FROM verified_users ORDER BY registration_date ASC"
         );
 
         const enhancedUsers = await Promise.all(
@@ -1669,7 +1680,7 @@ app.post("/account/withdraw", async (req, res) => {
 
         // 3️⃣ FETCH BALANCE INFO
         const profile = await userDb.get(
-            "SELECT total_balance, pending_withdrawal, total_withdrawal FROM profile LIMIT 1"
+            "SELECT total_balance, total_bonus, pending_withdrawal, total_withdrawal FROM profile LIMIT 1"
         );
 
         const withdrawAmt = parseFloat(amount);
@@ -1684,7 +1695,23 @@ app.post("/account/withdraw", async (req, res) => {
             });
         }
 
-        if (!profile || profile.total_balance < total) {
+        let currentBonus = parseFloat(profile?.total_bonus || 0);
+        let currentBalance = parseFloat(profile?.total_balance || 0);
+        
+        let deductionFromBonus = 0;
+        let deductionFromBalance = total;
+
+        if (currentBonus > 0) {
+            if (currentBonus >= total) {
+                deductionFromBonus = total;
+                deductionFromBalance = 0;
+            } else {
+                deductionFromBonus = currentBonus;
+                deductionFromBalance = total - currentBonus;
+            }
+        }
+
+        if (!profile || currentBalance < deductionFromBalance) {
             await userDb.close();
             return res.json({
                 success: false,
@@ -1709,7 +1736,8 @@ app.post("/account/withdraw", async (req, res) => {
         }
 
         // 5️⃣ UPDATE PROFILE BALANCES
-        const newBalance = profile.total_balance - total;
+        const newBalance = currentBalance - deductionFromBalance;
+        const newBonus = currentBonus - deductionFromBonus;
 
         // For Bank Wire: add to pending only, crypto updates total & last withdrawal immediately
         let newPending = profile.pending_withdrawal || 0;
@@ -1728,10 +1756,11 @@ app.post("/account/withdraw", async (req, res) => {
         await userDb.run(
             `UPDATE profile SET 
                 total_balance = ?, 
+                total_bonus = ?,
                 pending_withdrawal = ?, 
                 last_withdrawal = ?, 
                 total_withdrawal = ?`,
-            [newBalance, newPending, lastWithdrawal, newTotalWithdrawal]
+            [newBalance, newBonus, newPending, lastWithdrawal, newTotalWithdrawal]
         );
 
         // 6️⃣ LOG TRANSACTION
