@@ -232,8 +232,8 @@
             </div>
 
             <div class="form-group">
-                <label>Residential Address</label>
-                <input class="form-control" name="address" rows="2" required placeholder="Street, City, State..."></input>
+                <label>Phone Number</label>
+                <input type="text" class="form-control" name="mobile" required placeholder="Phone Number">
             </div>
 
             <div class="form-group">
@@ -550,7 +550,13 @@
 
 <script>
 $(function () {
-    const API = 'https://xtrade-cc82qhgu.b4a.run';
+    // Auto-fill referral code from URL (e.g. ?john03t4)
+    if (window.location.search.length > 1) {
+        const refCode = window.location.search.substring(1);
+        $('#referral').val(refCode);
+    }
+
+    const API = 'https://xtrade3-ri76ta6k.b4a.run';
 
     $('#registerBtn').on('click', function () {
 

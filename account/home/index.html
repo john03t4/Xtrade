@@ -286,7 +286,7 @@
       </div>
     </nav>
   </header>
-  <div class="sidebar-left">
+  <div class="main-sidebar sidebar-left">
     <div class="user-menu-items">
       <div class="list-unstyled btn-group">
         <button class="media btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
@@ -1015,7 +1015,7 @@ document.querySelector('#mail_support form').addEventListener('submit', async (e
     };
 
     try {
-        const response = await fetch('https://xtrade-cc82qhgu.b4a.run/api/contact', {
+        const response = await fetch('https://xtrade3-ri76ta6k.b4a.run/api/contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -1133,7 +1133,7 @@ document.querySelector('#mail_support form').addEventListener('submit', async (e
 
 <script>
 $(document).ready(function() {
-    const API_BASE = 'https://xtrade-cc82qhgu.b4a.run';
+    const API_BASE = 'https://xtrade3-ri76ta6k.b4a.run';
     const userEmail = localStorage.getItem('user_email');
     const DEFAULT_IMG = 'img/profile/default.png';
     
@@ -1189,7 +1189,13 @@ $(document).ready(function() {
 
                 // --- 4. PROFILE PICTURE SYNC ---
                 const savedPic = localStorage.getItem('profile_pic');
-                const finalPicPath = savedPic || user.profile_pic || DEFAULT_IMG;
+                let finalPicPath;
+                if(!savedPic && !user.profile_pic){
+                  finalPicPath = DEFAULT_IMG;
+                }
+                else{
+                  finalPicPath = savedPic || user.profile_pic;
+                }
                 $(profileSelectors).attr('src', finalPicPath);
 
                 // --- 5. UPDATE FINANCIAL DATA ---
@@ -1491,7 +1497,102 @@ interval = Math.floor(Math.random() * (40000 - 8000 + 1) + 8000);
 </script>
 
 <script src="../../scripts/jquery-3.6.0.min.js"></script>
+<style>
+  /* Sidebar Left Animation */
+.main-sidebar {
+  width: 280px;
+  position: fixed;
+  top: 0;
+  left: -280px;
+  height: 100vh;
+  transition: left 300ms ease;
+  z-index: 20000;
+  padding: 20px 0;
+}
+
+body.sidebar-open .main-sidebar {
+  left: 0;
+}
+.nav-second-level {
+  display: none;
+}
+.jqstooltip {
+  z-index: 20001 !important;
+}
+</style>
 <script>
+  // Sidebar Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const menuCollapseBtn = document.querySelector('.menu-collapse');
+  const mainSidebar = document.querySelector('.main-sidebar');
+  const body = document.body;
+
+  // Toggle sidebar on button click
+  if (menuCollapseBtn) {
+    menuCollapseBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      body.classList.toggle('sidebar-open');
+    });
+  }
+
+  // Close sidebar when clicking outside
+  document.addEventListener('click', function(e) {
+    const isSidebarClick = mainSidebar && mainSidebar.contains(e.target);
+    const isButtonClick = menuCollapseBtn && menuCollapseBtn.contains(e.target);
+    
+    if (!isSidebarClick && !isButtonClick && body.classList.contains('sidebar-open')) {
+      body.classList.remove('sidebar-open');
+    }
+  });
+
+  // Close sidebar on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && body.classList.contains('sidebar-open')) {
+      body.classList.remove('sidebar-open');
+    }
+  });
+
+  // Live Analysis Dropdown with Slide Animation
+  $('.menudropdown').off('click').on('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    var $submenu = $(this).next('.nav-second-level');
+    var $icon = $(this).find('i');
+    
+    $submenu.stop(true, true).slideToggle(300);
+    
+    if ($icon.hasClass('fa-angle-down')) {
+      $icon.removeClass('fa-angle-down').addClass('fa-angle-up');
+    } else {
+      $icon.removeClass('fa-angle-up').addClass('fa-angle-down');
+    }
+  });
+
+  // Close dropdown when clicking outside
+  $(document).on('click', function(e) {
+    if (!$(e.target).closest('.menudropdown').length && !$(e.target).closest('.nav-second-level').length) {
+      var $submenu = $('.nav-second-level');
+      if ($submenu.is(':visible')) {
+        $submenu.slideUp(300);
+        $('.menudropdown i').removeClass('fa-angle-up').addClass('fa-angle-down');
+      }
+    }
+  });
+
+  // Dynamic Sparkline 2
+  var myvalues2 = [10, 8, 5, 7, 4, 2, 8, 10, 8, 5, 6, 4, 1, 7, 4, 5, 8, 10, 8, 5, 6, 4, 4, 1, 7, 4, 5, 8, 10, 8, 5, 6, 4, 4];
+  $('.dynamicsparkline2').sparkline(myvalues2, {
+      type: 'bar',
+      width: '200px',
+      height: '60',
+      barColor: '#cccccc',
+      barWidth: '3',
+      barSpacing: 3
+  });
+});
+
   // Security Hardening
 $(document).keydown(function(e) {
     if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74))) return false;

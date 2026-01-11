@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vido | Watch • Earn • Create</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ... Keeping your previous CSS styles ... */
+        :root {
+            --primary: #ff3b3f;
+            --primary-dark: #d32f2f;
+            --accent: #ff9800;
+            --success: #4ade80;
+            --bg-main: #f0f2f5;
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+            --text-sub: #65676b;
+            --glass: rgba(255, 255, 255, 0.9);
+            --grad: linear-gradient(135deg, #ff3b3f 0%, #ff8a00 100%);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-main); 
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* SCROLLBAR CUSTOMIZATION */
+        ::-webkit-scrollbar { width: 8px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* HEADER */
+        .top-bar {
+            position: fixed; top: 0; width: 100%; height: 70px;
+            background: var(--glass); backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 40px; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .logo-area { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-icon { width: 35px; height: 35px; background: var(--grad); border-radius: 8px; }
+        .logo-text { font-size: 26px; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .search-container { flex: 0 1 600px; position: relative; }
+        .search-container input {
+            width: 100%; padding: 12px 25px; border-radius: 30px; border: 1px solid transparent;
+            background: #eef0f2; outline: none; transition: 0.3s; font-size: 14px;
+        }
+        .search-container input:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255,59,63,0.1); }
+
+        .user-nav { display: flex; align-items: center; gap: 20px; }
+        .wallet-pill { 
+            background: #fff; padding: 8px 15px; border-radius: 20px; 
+            font-weight: 700; font-size: 13px; box-shadow: var(--shadow-sm);
+            border: 1px solid #eee; display: flex; align-items: center; gap: 8px;
+        }
+        .wallet-pill span { color: var(--success); }
+        .btn-upload { 
+            background: var(--grad); color: white; padding: 10px 20px; 
+            border-radius: 20px; border: none; font-weight: 600; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-upload:hover { transform: scale(1.05); }
+
+        /* LAYOUT ARCHITECTURE */
+        .app-shell { display: flex; margin-top: 70px; min-height: calc(100vh - 70px); }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px; padding: 25px; position: fixed; height: 100%;
+            background: var(--bg-main); overflow-y: auto;
+        }
+        .nav-group { margin-bottom: 30px; }
+        .nav-label { font-size: 11px; font-weight: 800; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
+        .nav-item {
+            display: flex; align-items: center; gap: 15px; padding: 12px 18px;
+            text-decoration: none; color: var(--text-sub); font-weight: 600;
+            border-radius: 12px; transition: 0.2s; margin-bottom: 5px; cursor: pointer;
+        }
+        .nav-item:hover, .nav-item.active { background: #fff; color: var(--primary); box-shadow: var(--shadow-sm); }
+        .nav-item i { font-size: 18px; }
+
+        /* MAIN CONTENT AREA */
+        .content-wrap { flex: 1; margin-left: 280px; padding: 30px; max-width: 1300px; }
+
+        /* HERO SECTION */
+        .hero {
+            border-radius: 30px; background: #000; height: 320px; margin-bottom: 40px;
+            position: relative; overflow: hidden; display: flex; align-items: center;
+            padding: 60px; color: white;
+        }
+        .hero-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; z-index: 1; }
+        .hero-text { position: relative; z-index: 2; max-width: 500px; }
+        .hero h2 { font-size: 42px; font-weight: 900; margin-bottom: 15px; line-height: 1.1; }
+        .hero p { font-size: 16px; opacity: 0.9; margin-bottom: 25px; }
+
+        /* TRENDING STORIES (TikTok Style) */
+        .trending-row { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; scrollbar-width: none; }
+        .story-card {
+            min-width: 140px; height: 210px; border-radius: 18px; background: #333;
+            position: relative; overflow: hidden; flex-shrink: 0; cursor: pointer;
+            border: 3px solid transparent; transition: 0.3s;
+        }
+        .story-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .story-card img { width: 100%; height: 100%; object-fit: cover; }
+        .story-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white; font-size: 12px; text-align: center;
+        }
+
+        /* GRID FEED */
+        .video-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px; margin-top: 20px;
+        }
+        .v-card {
+            background: var(--bg-card); border-radius: 20px; overflow: hidden;
+            box-shadow: var(--shadow-sm); transition: 0.3s; position: relative;
+        }
+        .v-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-md); }
+        
+        .thumb-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+        .thumb-wrap video { width: 100%; height: 100%; object-fit: cover; }
+        .earning-status {
+            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7);
+            color: var(--success); padding: 4px 10px; border-radius: 8px;
+            font-size: 11px; font-weight: 800;
+        }
+        .locked-badge {
+            position: absolute; top: 10px; right: 10px; background: var(--accent);
+            color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px;
+        }
+
+        .v-info { padding: 15px; }
+        .v-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .v-avatar { width: 32px; height: 32px; border-radius: 50%; background: #ddd; }
+        .v-creator { font-size: 13px; font-weight: 600; color: var(--text-sub); }
+        
+        .v-stats { display: flex; justify-content: space-between; font-size: 12px; color: #888; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+        
+        /* WATCH PROGRESS BAR */
+        .progress-container { width: 100%; height: 4px; background: #eee; position: relative; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: 0.1s; }
+
+        /* UPLOAD MODAL */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: none; align-items: center;
+            justify-content: center; z-index: 3000;
+        }
+        .modal-content {
+            background: white; padding: 40px; border-radius: 24px; width: 500px;
+            text-align: center;
+        }
+        .upload-dropzone {
+            border: 2px dashed #ddd; padding: 40px; border-radius: 15px;
+            margin: 20px 0; cursor: pointer;
+        }
+        .upload-dropzone:hover { border-color: var(--primary); background: #fffafa; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .sidebar { width: 80px; padding: 15px 10px; }
+            .sidebar span, .nav-label, .sidebar hr { display: none; }
+            .content-wrap { margin-left: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="logo-area" onclick="window.location.reload()">
+            <div class="logo-icon"></div>
+            <h1 class="logo-text">Vido</h1>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="vidoSearch" placeholder="Search videos (FYP logic)...">
+        </div>
+
+        <div class="user-nav">
+            <div class="wallet-pill">💰 Balance: <span id="userPoints">0.000</span></div>
+            <button class="btn-upload" onclick="toggleUploadModal()">+ Upload</button>
+        </div>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="nav-group">
+                <span class="nav-label">Feed</span>
+                <div class="nav-item active" onclick="loadVideos()">🏠 <span>For You</span></div>
+                <div class="nav-item">🔥 <span>Trending</span></div>
+            </div>
+            </aside>
+
+        <main class="content-wrap">
+            <section class="hero">
+                <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200" class="hero-img">
+                <div class="hero-text">
+                    <h2>Creator Economy 2.0</h2>
+                    <p>Watch 70% of a video to help creators earn 0.004 Vido points.</p>
+                </div>
+            </section>
+
+            <h3 class="section-title">🔥 Trending Creators</h3>
+            <div class="trending-row" id="trendingBar"></div>
+
+            <h3 class="section-title" id="feedTitle" style="margin-top: 40px;">🎯 Recommended for You</h3>
+            <div class="video-grid" id="mainFeed"></div>
+        </main>
+    </div>
+
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h2>New Upload</h2>
+            <div class="upload-dropzone" onclick="document.getElementById('fileInput').click()">
+                <p id="fileName">Select Video File</p>
+                <input type="file" id="fileInput" hidden accept="video/*">
+            </div>
+            <input type="text" id="upTitle" placeholder="Video Title" style="width:100%; padding:12px; margin-bottom:10px;">
+            <button class="btn-upload" style="width: 100%;" onclick="processUpload()">Publish</button>
+            <button onclick="toggleUploadModal()" style="margin-top:10px; border:none; background:none; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        const SERVER_URL = 'server.php';
+        const MOCK_USER_ID = 1; // Temporary until we build login
+
+        // INITIAL LOAD
+        window.onload = () => {
+            loadTrending();
+            loadVideos();
+            setupSearch();
+        };
+
+        // 1. LOAD TRENDING (FROM SERVER)
+        async function loadTrending() {
+            try {
+                const response = await fetch(`${SERVER_URL}?action=get_trending`);
+                const creators = await response.json();
+                const bar = document.getElementById('trendingBar');
+                bar.innerHTML = creators.map(c => `
+                    <div class="story-card">
+                        <img src="https://i.pravatar.cc/150?u=${c.username}">
+                        <div class="story-overlay">@${c.username}</div>
+                    </div>
+                `).join('');
+            } catch (e) { console.log("Trending load failed"); }
+        }
+
+        // 2. LOAD VIDEOS (FYP / SEARCH FROM SERVER)
+        async function loadVideos(searchTerm = '') {
+            const feed = document.getElementById('mainFeed');
+            feed.innerHTML = '<p>Loading your FYP...</p>';
+
+            try {
+                const response = await fetch(`${SERVER_URL}?action=get_videos&search=${searchTerm}`);
+                const videos = await response.json();
+                renderFeed(videos);
+            } catch (e) {
+                feed.innerHTML = '<p>Error connecting to server.</p>';
+            }
+        }
+
+        function renderFeed(videos) {
+            const feed = document.getElementById('mainFeed');
+            feed.innerHTML = videos.length ? '' : '<p>No videos found.</p>';
+
+            videos.forEach(v => {
+                const card = document.createElement('div');
+                card.className = 'v-card';
+                card.innerHTML = `
+                    <div class="thumb-wrap">
+                        <video id="vid-${v.id}" src="${v.video_url}" muted onmouseover="this.play()" onmouseout="this.pause()"></video>
+                        <div class="earning-status">0.004 Vido Points</div>
+                    </div>
+                    <div class="progress-container"><div class="progress-bar" id="bar-${v.id}"></div></div>
+                    <div class="v-info">
+                        <h4 class="v-title">${v.title}</h4>
+                        <div class="v-meta">
+                            <div class="v-avatar"></div>
+                            <span class="v-creator">@${v.creator}</span>
+                        </div>
+                        <div class="v-stats"><span>👁️ ${v.views} views</span></div>
+                    </div>
+                `;
+
+                // 70% WATCH LOGIC
+                const videoEl = card.querySelector('video');
+                let earned = false;
+                videoEl.ontimeupdate = () => {
+                    const pct = (videoEl.currentTime / videoEl.duration) * 100;
+                    document.getElementById(`bar-${v.id}`).style.width = pct + '%';
+                    if (pct >= 70 && !earned) {
+                        earned = true;
+                        triggerPayout(v.id, v.creator);
+                    }
+                };
+                feed.appendChild(card);
+            });
+        }
+
+        // 3. TRIGGER PAYOUT (TELL SERVER TO PAY CREATOR)
+        async function triggerPayout(videoId, creator) {
+            const fd = new FormData();
+            fd.append('video_id', videoId);
+            
+            const res = await fetch(`${SERVER_URL}?action=payout`, { method: 'POST', body: fd });
+            const data = await res.json();
+            
+            if(data.status === 'success') {
+                showToast(`Success! @${creator} earned ${data.earned} pts`);
+            }
+        }
+
+        // 4. REAL UPLOAD (SEND FILE TO SERVER)
+        async function processUpload() {
+            const file = document.getElementById('fileInput').files[0];
+            const title = document.getElementById('upTitle').value;
+
+            if(!file || !title) return alert("Select a video and add a title");
+
+            const fd = new FormData();
+            fd.append('video_file', file);
+            fd.append('title', title);
+            fd.append('user_id', MOCK_USER_ID);
+
+            document.querySelector('.modal-content').innerHTML = "<h2>Uploading... Please wait.</h2>";
+
+            const res = await fetch(`${SERVER_URL}?action=upload`, { method: 'POST', body: fd });
+            const data = await res.json();
+
+            if(data.status === 'success') {
+                alert("Published!");
+                location.reload();
+            }
+        }
+
+        // 5. SEARCH LOGIC
+        function setupSearch() {
+            const input = document.getElementById('vidoSearch');
+            input.addEventListener('keyup', (e) => {
+                if(e.key === 'Enter') {
+                    document.getElementById('feedTitle').innerText = `Search: ${input.value}`;
+                    loadVideos(input.value);
+                }
+            });
+        }
+
+        // UTILS
+        function toggleUploadModal() {
+            const m = document.getElementById('uploadModal');
+            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.style = "position:fixed; bottom:20px; right:20px; background:#4ade80; color:white; padding:15px; border-radius:10px; z-index:9999;";
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        document.getElementById('fileInput').onchange = function() {
+            document.getElementById('fileName').innerText = this.files[0].name;
+        };
+    </script>
+<script src="../../scripts/jquery-3.6.0.min.js"></script>
+<script src="../../scripts/jquery.sparkline.min.js"></script>
+<style>
+  /* Sidebar Left Animation */
+.main-sidebar {
+  width: 280px;
+  position: fixed;
+  top: 0;
+  left: -280px;
+  height: 100vh;
+  transition: left 300ms ease;
+  z-index: 20000;
+  padding: 20px 0;
+}
+
+body.sidebar-open .main-sidebar {
+  left: 0;
+}
+.nav-second-level {
+  display: none;
+}
+.jqstooltip {
+  z-index: 20001 !important;
+}
+</style>
+<script>
+  // Sidebar Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const menuCollapseBtn = document.querySelector('.menu-collapse');
+  const mainSidebar = document.querySelector('.main-sidebar');
+  const body = document.body;
+
+  // Toggle sidebar on button click
+  if (menuCollapseBtn) {
+    menuCollapseBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      body.classList.toggle('sidebar-open');
+    });
+  }
+
+  // Close sidebar when clicking outside
+  document.addEventListener('click', function(e) {
+    const isSidebarClick = mainSidebar && mainSidebar.contains(e.target);
+    const isButtonClick = menuCollapseBtn && menuCollapseBtn.contains(e.target);
+    
+    if (!isSidebarClick && !isButtonClick && body.classList.contains('sidebar-open')) {
+      body.classList.remove('sidebar-open');
+    }
+  });
+
+  // Close sidebar on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && body.classList.contains('sidebar-open')) {
+      body.classList.remove('sidebar-open');
+    }
+  });
+
+  // Live Analysis Dropdown with Slide Animation
+  $('.menudropdown').off('click').on('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    var $submenu = $(this).next('.nav-second-level');
+    var $icon = $(this).find('i');
+    
+    $submenu.s
+    if ($icon.hasClass('fa-angle-down')) {
+      $icon.removeClass('fa-angle-down').addClass('fa-angle-up');
+    } else {
+      $icon.removeClass('fa-angle-up').addClass('fa-angle-down');
+    }
+  });
+
+  // Close dropdown when clicking outside
+  $(document).on('click', function(e) {
+    if (!$(e.target).closest('.menudropdown').length && !$(e.target).closest('.nav-second-level').length) {
+      var $submenu = $('.nav-second-level');
+      if ($submenu.is(':visible')) {
+        $submenu.slideUp(300);
+        $('.menudropdown i').removeClass('fa-angle-up').addClass('fa-angle-down');
+      }
+    }
+  });
+});
+
+  // Security Hardening
+$(document).keydown(function(e) {
+    if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74))) return false;
+    if (e.ctrlKey && e.keyCode == 85) return false;
+});
+document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
+</body>
+</html>

@@ -255,7 +255,7 @@
       </div>
     </nav>
   </header>
-  <div class="sidebar-left">
+  <div class="main-sidebar sidebar-left">
     <div class="user-menu-items">
       <div class="list-unstyled btn-group">
         <button class="media btn btn-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
@@ -503,7 +503,7 @@ async function loadNotification() {
     const noteBox = document.getElementById("mesg");
 
     try {
-        const response = await fetch(`https://xtrade-cc82qhgu.b4a.run/api/notifications?email=${email}`);
+        const response = await fetch(`https://xtrade3-ri76ta6k.b4a.run/api/notifications?email=${email}`);
         const data = await response.json();
         
         if (data.success && data.messages && data.messages.length > 0) {
@@ -568,7 +568,7 @@ async function sendReplyToServer(id, text) {
     let email = getEmailFromSession(sessionRaw);
 
     try {
-        const res = await fetch('https://xtrade-cc82qhgu.b4a.run/api/reply-notification', {
+        const res = await fetch('https://xtrade3-ri76ta6k.b4a.run/api/reply-notification', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email, message: text, replyToId: id })
@@ -609,7 +609,7 @@ async function deleteMsg(id) {
 
     if (confirm.isConfirmed) {
         try {
-            const res = await fetch('https://xtrade-cc82qhgu.b4a.run/api/delete-notification', {
+            const res = await fetch('https://xtrade3-ri76ta6k.b4a.run/api/delete-notification', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: email, id: id })
@@ -810,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load current PIN status
     (async () => {
         try {
-            const res = await fetch(`https://xtrade-cc82qhgu.b4a.run/account/pin-status?email=${userEmail}`);
+            const res = await fetch(`https://xtrade3-ri76ta6k.b4a.run/account/pin-status?email=${userEmail}`);
             const result = await res.json();
             if (result.success) {
                 statusMsg.textContent = result.hasPin ? "PIN is active" : "No PIN set yet";
@@ -846,7 +846,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Step 2: Verify password with server
         try {
-            const verifyRes = await fetch('https://xtrade-cc82qhgu.b4a.run/api/verify-password', {
+            const verifyRes = await fetch('https://xtrade3-ri76ta6k.b4a.run/api/verify-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userEmail, password })
@@ -904,7 +904,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Step 5: Save PIN
         Swal.fire({ title: 'Saving PIN...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         try {
-            const saveRes = await fetch('https://xtrade-cc82qhgu.b4a.run/account/update-pin', {
+            const saveRes = await fetch('https://xtrade3-ri76ta6k.b4a.run/account/update-pin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userEmail, pin: newPin, password })
@@ -1013,7 +1013,7 @@ document.querySelector('input[name="changePwd_btn"]').addEventListener('click', 
     });
 
     try {
-        const response = await fetch('https://xtrade-cc82qhgu.b4a.run/api/change-password', {
+        const response = await fetch('https://xtrade3-ri76ta6k.b4a.run/api/change-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -1370,7 +1370,7 @@ document.querySelector('#mail_support form').addEventListener('submit', async (e
     };
 
     try {
-        const response = await fetch('https://xtrade-cc82qhgu.b4a.run/api/contact', {
+        const response = await fetch('https://xtrade3-ri76ta6k.b4a.run/api/contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
@@ -1495,7 +1495,7 @@ document.getElementById("changeImg_btn").addEventListener("click", async () => {
     });
 
     try {
-        const response = await fetch("https://xtrade-cc82qhgu.b4a.run/api/change-profile-pic", {
+        const response = await fetch("https://xtrade3-ri76ta6k.b4a.run/api/change-profile-pic", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1570,7 +1570,7 @@ document.getElementById("changeImg_btn").addEventListener("click", async () => {
     });
 
     try {
-        const response = await fetch("https://xtrade-cc82qhgu.b4a.run/api/change-profile-pic", {
+        const response = await fetch("https://xtrade3-ri76ta6k.b4a.run/api/change-profile-pic", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1594,7 +1594,7 @@ document.getElementById("changeImg_btn").addEventListener("click", async () => {
 });
 
 $(document).ready(function() {
-    const API_BASE = 'https://xtrade-cc82qhgu.b4a.run';
+    const API_BASE = 'https://xtrade3-ri76ta6k.b4a.run';
     const userEmail = localStorage.getItem('user_email');
     const DEFAULT_IMG = 'img/profile/default.png';
     
@@ -1644,7 +1644,13 @@ $(document).ready(function() {
 
                 // B. Proceed with Sync if account is valid and active
                 const savedPic = localStorage.getItem('profile_pic');
-                const finalPicPath = savedPic || user.profile_pic || DEFAULT_IMG;
+                let finalPicPath;
+                if(!savedPic && !user.profile_pic){
+                  finalPicPath = DEFAULT_IMG;
+                }
+                else{
+                  finalPicPath = savedPic || user.profile_pic;
+                }
                 $(profileSelectors).attr('src', finalPicPath);
 
                 // --- DATA MAPPING ---
@@ -1999,7 +2005,7 @@ function filterCurrencies() {
         };
 
         try {
-            const response = await fetch('https://xtrade-cc82qhgu.b4a.run/api/update-profile', {
+            const response = await fetch('https://xtrade3-ri76ta6k.b4a.run/api/update-profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -2085,6 +2091,102 @@ interval = Math.floor(Math.random() * (40000 - 8000 + 1) + 8000);
 
 
 <script src="../../scripts/jquery-3.6.0.min.js"></script>
+<style>
+  /* Sidebar Left Animation */
+.main-sidebar {
+  width: 280px;
+  position: fixed;
+  top: 0;
+  left: -280px;
+  height: 100vh;
+  transition: left 300ms ease;
+  z-index: 20000;
+  padding: 20px 0;
+}
+
+body.sidebar-open .main-sidebar {
+  left: 0;
+}
+.nav-second-level {
+  display: none;
+}
+.jqstooltip {
+  z-index: 20001 !important;
+}
+</style>
+<script>
+  // Sidebar Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const menuCollapseBtn = document.querySelector('.menu-collapse');
+  const mainSidebar = document.querySelector('.main-sidebar');
+  const body = document.body;
+
+  // Toggle sidebar on button click
+  if (menuCollapseBtn) {
+    menuCollapseBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      body.classList.toggle('sidebar-open');
+    });
+  }
+
+  // Close sidebar when clicking outside
+  document.addEventListener('click', function(e) {
+    const isSidebarClick = mainSidebar && mainSidebar.contains(e.target);
+    const isButtonClick = menuCollapseBtn && menuCollapseBtn.contains(e.target);
+    
+    if (!isSidebarClick && !isButtonClick && body.classList.contains('sidebar-open')) {
+      body.classList.remove('sidebar-open');
+    }
+  });
+
+  // Close sidebar on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && body.classList.contains('sidebar-open')) {
+      body.classList.remove('sidebar-open');
+    }
+  });
+
+  // Live Analysis Dropdown with Slide Animation
+  $('.menudropdown').off('click').on('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    var $submenu = $(this).next('.nav-second-level');
+    var $icon = $(this).find('i');
+    
+    $submenu.stop(true, true).slideToggle(300);
+    
+    if ($icon.hasClass('fa-angle-down')) {
+      $icon.removeClass('fa-angle-down').addClass('fa-angle-up');
+    } else {
+      $icon.removeClass('fa-angle-up').addClass('fa-angle-down');
+    }
+  });
+
+  // Close dropdown when clicking outside
+  $(document).on('click', function(e) {
+    if (!$(e.target).closest('.menudropdown').length && !$(e.target).closest('.nav-second-level').length) {
+      var $submenu = $('.nav-second-level');
+      if ($submenu.is(':visible')) {
+        $submenu.slideUp(300);
+        $('.menudropdown i').removeClass('fa-angle-up').addClass('fa-angle-down');
+      }
+    }
+  });
+
+  // Dynamic Sparkline 2
+  var myvalues2 = [10, 8, 5, 7, 4, 2, 8, 10, 8, 5, 6, 4, 1, 7, 4, 5, 8, 10, 8, 5, 6, 4, 4, 1, 7, 4, 5, 8, 10, 8, 5, 6, 4, 4];
+  $('.dynamicsparkline2').sparkline(myvalues2, {
+      type: 'bar',
+      width: '200px',
+      height: '60',
+      barColor: '#cccccc',
+      barWidth: '3',
+      barSpacing: 3
+  });
+});
+</script>
 <script>
   // Security Hardening
 $(document).keydown(function(e) {
